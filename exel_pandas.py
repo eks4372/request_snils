@@ -1,6 +1,10 @@
 import sys
 import time
 import pandas as pd
+import os, pathlib
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    os.environ["PYMORPHY2_DICT_PATH"] = str(pathlib.Path(sys._MEIPASS).joinpath('pymorphy2_dicts_ru/data'))
 import pymorphy2
 from snils_post_request import get_req
 from snils_post_response import get_snils
@@ -76,6 +80,10 @@ if __name__ == '__main__':
     input_file = input('введите имя входного файла: ')
     output_file = input('введите имя выходного файла: ')
     doc = input('передавать данные паспорта? (enter - по умолчанию - нет): ')
+    try:
+        pause = int(input('пауза в секундах до обработки функции получения ответов (по умолчанию 1): '))
+    except:
+        pause = 0
     if '.xlsx' not in input_file:
         input_file = f'{input_file}.xlsx'
     if '.xlsx' not in output_file:
@@ -86,6 +94,12 @@ if __name__ == '__main__':
         doc = False
 
     send_request_to_smev(input_file, doc=doc)
+    if pause < 1 or not pause:
+        pause = 1
+    for i in range(0, pause):
+        print(f'ждем до приёма ответов {pause} секунд')
+        time.sleep(1)
+        pause -= 1
     get_snils_from_smev('send.xlsx', output_file)
 
     # send_request_to_smev('2020.xlsx', doc=True, file_out='send2020.xlsx')
@@ -96,10 +110,3 @@ if __name__ == '__main__':
     #
     # send_request_to_smev('2022.xlsx', doc=True, file_out='send2022.xlsx')
     # get_snils_from_smev('send2022.xlsx', file_out='get2022.xlsx')
-
-    # pause = 3
-    # for i in range(0, pause):
-    #     print(f'ждем до приёма ответов {pause} секунд')
-    #     time.sleep(1)
-    #     pause -= 1
-    # get_snils_from_smev('send.xlsx')
