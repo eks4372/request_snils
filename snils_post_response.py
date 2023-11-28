@@ -22,7 +22,11 @@ def get_snils(message_id):
             try:
                 x = r.json()[0]['reject']['description']
             except:
-                x = r.json()[0]['error']
+                try:
+                    x = r.json()[0]['error']
+                except:
+                    x = r.text
+                    print('нет ответа')
             return x
         # print(x)
     else:
