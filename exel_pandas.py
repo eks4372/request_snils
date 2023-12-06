@@ -25,7 +25,10 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         try:
             gender = row.пол
         except:
-            gender = pymorphy2.MorphAnalyzer().parse(name)[0].tag.gender
+            if patronymic:
+                gender = pymorphy2.MorphAnalyzer().parse(patronymic)[0].tag.gender
+            else:
+                gender = pymorphy2.MorphAnalyzer().parse(name)[0].tag.gender
             if gender == 'femn':
                 gender = 'Female'
             elif gender == 'masc':
@@ -35,7 +38,8 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         print(gender)
         df.at[index, 'пол'] = gender
         birthday = row.ДР
-        birthday = f'{birthday[-4:]}-{birthday[3:5]}-{birthday[:2]}'
+        if '-' not in birthday:
+            birthday = f'{birthday[-4:]}-{birthday[3:5]}-{birthday[:2]}'
         print(birthday)
         if doc:
             try:
@@ -45,6 +49,7 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
                 print('не корректные паспортные данные')
                 m_id = 'запрос с такими паспортными данными не будет отработан'
             doc_num = row['Номер док. уд. личность']
+            # doc_num = f"{row['Номер док. уд. личность']:06}"
             doc_date = row['Дата  док. уд. личность']
             print(f'паспорт {doc_sn} {doc_num} выдан {doc_date}')
         else:
@@ -64,6 +69,7 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         else:
             df.at[index, 'message_id'] = 'нужно указать пол'
     # # print(df)
+    df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
     df.to_excel(file_out, index=False)
 
 
@@ -88,6 +94,7 @@ def get_snils_from_smev(file, file_out='get.xlsx'):
             print(f'что-то пошло не так при запросе {index + 1} - {m_id}')
             df.to_excel('get_part.xlsx', index=False)
             sys.exit()
+    df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
     df.to_excel(file_out, index=False)
 
 
@@ -120,9 +127,9 @@ if __name__ == '__main__':
 
     # send_request_to_smev('1_doc.xlsx', doc=False, file_out='send_doc1.xlsx')
     # get_snils_from_smev('send_doc1.xlsx', file_out='get_doc1.xlsx')
-    send_request_to_smev('кто это такой охуевший СНИЛС не вносил(391).xlsx', doc=True, file_out='send.xlsx')
-    time.sleep(10)
-    get_snils_from_smev('send.xlsx', file_out='get.xlsx')
+    send_request_to_smev('merged_file.xlsx', doc=True, file_out='send.xlsx')
+    # time.sleep(10)
+    get_snils_from_smev('send.xlsx', file_out='get_.xlsx')
     # send_request_to_smev('2001 (933).xlsx', doc=False, file_out='send2_f.xlsx')
     # get_snils_from_smev('send2.xlsx', file_out='get2.xlsx')
 
