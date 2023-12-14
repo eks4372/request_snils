@@ -49,7 +49,7 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
                 print('не корректные паспортные данные')
                 m_id = 'запрос с такими паспортными данными не будет отработан'
             doc_num = row['Номер док. уд. личность']
-            # doc_num = f"{row['Номер док. уд. личность']:06}"
+            # doc_num = f"{row['Номер док. уд. личность']:06}"  # чтоб не потерять нули вначале
             doc_date = row['Дата  док. уд. личность']
             print(f'паспорт {doc_sn} {doc_num} выдан {doc_date}')
         else:
@@ -128,8 +128,8 @@ if __name__ == '__main__':
     # send_request_to_smev('1_doc.xlsx', doc=False, file_out='send_doc1.xlsx')
     # get_snils_from_smev('send_doc1.xlsx', file_out='get_doc1.xlsx')
     send_request_to_smev('merged_file.xlsx', doc=True, file_out='send.xlsx')
-    # time.sleep(10)
-    get_snils_from_smev('send.xlsx', file_out='get_.xlsx')
+    time.sleep(10)
+    get_snils_from_smev('send.xlsx', file_out='get_december.xlsx')
     # send_request_to_smev('2001 (933).xlsx', doc=False, file_out='send2_f.xlsx')
     # get_snils_from_smev('send2.xlsx', file_out='get2.xlsx')
 
