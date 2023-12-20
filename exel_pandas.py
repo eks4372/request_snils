@@ -24,11 +24,20 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         print(f'{family} {name} {patronymic}')
         try:
             gender = row.пол
+            if gender != gender:
+                print("Value is NaN")
+                raise
         except:
             if patronymic:
                 gender = pymorphy2.MorphAnalyzer().parse(patronymic)[0].tag.gender
+                if gender == 'neut':
+                    gender = pymorphy2.MorphAnalyzer().parse(name)[0].tag.gender
+                    if gender == 'neut':
+                        gender = pymorphy2.MorphAnalyzer().parse(family)[0].tag.gender
             else:
                 gender = pymorphy2.MorphAnalyzer().parse(name)[0].tag.gender
+                if gender == 'neut':
+                    gender = pymorphy2.MorphAnalyzer().parse(family)[0].tag.gender
             if gender == 'femn':
                 gender = 'Female'
             elif gender == 'masc':
@@ -44,7 +53,8 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         if doc:
             try:
                 doc_sn = row['Серия док. уд. личность'].replace(' ', '')
-                doc_sn = int(doc_sn)
+                t = int(doc_sn)
+                # doc_sn = int(f'{doc_sn:04}')
                 m_id = ''
             except:
                 print('не корректные паспортные данные')
@@ -128,9 +138,9 @@ if __name__ == '__main__':
 
     # send_request_to_smev('1_doc.xlsx', doc=False, file_out='send_doc1.xlsx')
     # get_snils_from_smev('send_doc1.xlsx', file_out='get_doc1.xlsx')
-    send_request_to_smev('EGRN_VK_INCCA0000570860_ALS_XX (Субъекты без СНИЛС)-3104446.xlsx', doc=True, file_out='send.xlsx')
-    time.sleep(10)
-    get_snils_from_smev('send.xlsx', file_out='get.xlsx')
+    send_request_to_smev('get_bad.xlsx', doc=True, file_out='send.xlsx')
+    # time.sleep(10)
+    get_snils_from_smev('send.xlsx', file_out='get_more.xlsx')
     # send_request_to_smev('2001 (933).xlsx', doc=False, file_out='send2_f.xlsx')
     # get_snils_from_smev('send2.xlsx', file_out='get2.xlsx')
 
