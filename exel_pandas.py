@@ -13,7 +13,7 @@ from snils_post_response import get_snils
 def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
     df = pd.read_excel(file)
     for index, row in df.iterrows():
-        print(f'{index + 1} из {len(df)}')
+        print(f'{index + 1} из {len(df)} - {round((index + 1)  * 100 / len(df), 2)} %')
         fio = row.ФИО.split(maxsplit=2)
         family = fio[0]
         name = fio[1]
@@ -44,6 +44,7 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
         if doc:
             try:
                 doc_sn = row['Серия док. уд. личность'].replace(' ', '')
+                doc_sn = int(doc_sn)
                 m_id = ''
             except:
                 print('не корректные паспортные данные')
@@ -76,7 +77,7 @@ def send_request_to_smev(file, doc=False, file_out='send.xlsx'):
 def get_snils_from_smev(file, file_out='get.xlsx'):
     df = pd.read_excel(file)
     for index, row in df.iterrows():
-        print(f'{index + 1} из {len(df)}')
+        print(f'{index + 1} из {len(df)} - {round((index + 1)  * 100 / len(df), 2)} %')
         m_id = row.message_id
         print(m_id)
         if m_id == 'запрос с такими паспортными данными не будет отработан':
@@ -127,9 +128,9 @@ if __name__ == '__main__':
 
     # send_request_to_smev('1_doc.xlsx', doc=False, file_out='send_doc1.xlsx')
     # get_snils_from_smev('send_doc1.xlsx', file_out='get_doc1.xlsx')
-    send_request_to_smev('merged_file.xlsx', doc=True, file_out='send.xlsx')
+    send_request_to_smev('EGRN_VK_INCCA0000570860_ALS_XX (Субъекты без СНИЛС)-3104446.xlsx', doc=True, file_out='send.xlsx')
     time.sleep(10)
-    get_snils_from_smev('send.xlsx', file_out='get_december.xlsx')
+    get_snils_from_smev('send.xlsx', file_out='get.xlsx')
     # send_request_to_smev('2001 (933).xlsx', doc=False, file_out='send2_f.xlsx')
     # get_snils_from_smev('send2.xlsx', file_out='get2.xlsx')
 
